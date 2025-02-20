@@ -9,98 +9,90 @@ const ChromaticSmoke = () => {
     if (!containerRef.current) return;
 
     const sketch = (p: p5) => {
-      const particles: Particle[] = [];
-      const numParticles = 150; // Increased number of particles
+      const particles: any[] = [];
+      const numParticles = 50; // Starting with fewer particles for better performance
       
       class Particle {
         pos: p5.Vector;
         vel: p5.Vector;
         acc: p5.Vector;
-        hue: number;
-        lifespan: number;
+        color: number;
+        alpha: number;
+        size: number;
         
         constructor() {
+          // Random starting position
           this.pos = p.createVector(p.random(p.width), p.random(p.height));
-          this.vel = p.createVector(0, -1);
+          // Random initial velocity
+          this.vel = p.createVector(p.random(-0.5, 0.5), p.random(-0.5, 0.5));
           this.acc = p.createVector(0, 0);
-          this.hue = p.random(360);
-          this.lifespan = 255;
-        }
-        
-        applyForce(force: p5.Vector) {
-          this.acc.add(force);
-        }
-        
-        run() {
-          this.update();
-          this.display();
+          // Random color from a pleasing palette
+          this.color = p.random([
+            p.color(33, 195, 240), // Light blue
+            p.color(230, 185, 128), // Sand color
+            p.color(255, 255, 255)  // White
+          ]);
+          this.alpha = p.random(40, 80);
+          this.size = p.random(100, 200);
         }
         
         update() {
+          // Apply some perlin noise for organic movement
+          const angle = p.noise(this.pos.x * 0.001, this.pos.y * 0.001, p.frameCount * 0.002) * p.TWO_PI * 2;
+          const noiseForce = p5.Vector.fromAngle(angle);
+          noiseForce.mult(0.1);
+          this.acc.add(noiseForce);
+          
+          // Update position
           this.vel.add(this.acc);
+          this.vel.limit(2); // Limit maximum speed
           this.pos.add(this.vel);
           this.acc.mult(0);
-          this.vel.mult(0.95);
-          this.lifespan -= 1;
           
-          // Mouse repulsion
-          const mouse = p.createVector(p.mouseX, p.mouseY);
-          const dir = p5.Vector.sub(this.pos, mouse);
-          const d = dir.mag();
-          if (d < 100) {
-            dir.normalize();
-            dir.mult(1 / d * 100);
-            this.applyForce(dir);
-          }
-          
-          // Add some noise movement
-          const noiseVal = p.noise(this.pos.x * 0.01, this.pos.y * 0.01, p.frameCount * 0.01);
-          const noiseForce = p.createVector(p.cos(noiseVal * p.TWO_PI), p.sin(noiseVal * p.TWO_PI));
-          noiseForce.mult(0.1);
-          this.applyForce(noiseForce);
-          
-          // Keep particles within bounds
+          // Wrap around edges
           if (this.pos.x < 0) this.pos.x = p.width;
           if (this.pos.x > p.width) this.pos.x = 0;
           if (this.pos.y < 0) this.pos.y = p.height;
           if (this.pos.y > p.height) this.pos.y = 0;
+          
+          // Slowly change size for breathing effect
+          this.size = this.size + Math.sin(p.frameCount * 0.05) * 0.5;
         }
         
         display() {
           p.noStroke();
-          p.colorMode(p.HSL);
-          const alpha = this.lifespan / 255 * 0.6; // Increased opacity further
-          p.fill(this.hue, 70, 50, alpha);
-          p.ellipse(this.pos.x, this.pos.y, 100, 100); // Increased particle size
-        }
-        
-        isDead() {
-          return this.lifespan < 0;
+          const c = this.color;
+          // Create a gradient effect
+          for (let i = this.size; i > 0; i -= 8) {
+            const alpha = (this.alpha * (i / this.size)) / 255;
+            p.fill(p.red(c), p.green(c), p.blue(c), alpha);
+            p.ellipse(this.pos.x, this.pos.y, i, i);
+          }
         }
       }
       
       p.setup = () => {
         const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-        canvas.style('display', 'block'); // Ensure canvas takes full space
+        canvas.style('display', 'block');
         canvas.parent(containerRef.current!);
-        p.blendMode(p.ADD);
+        
+        // Initialize particles
         for (let i = 0; i < numParticles; i++) {
           particles.push(new Particle());
         }
+        
+        // Set blend mode for better visual effect
+        p.blendMode(p.SCREEN);
       };
       
       p.draw = () => {
         p.clear();
-        p.blendMode(p.ADD);
         
-        for (let i = particles.length - 1; i >= 0; i--) {
-          const particle = particles[i];
-          particle.run();
-          if (particle.isDead()) {
-            particles.splice(i, 1);
-            particles.push(new Particle());
-          }
-        }
+        // Update and display all particles
+        particles.forEach(particle => {
+          particle.update();
+          particle.display();
+        });
       };
       
       p.windowResized = () => {
@@ -115,7 +107,7 @@ const ChromaticSmoke = () => {
     };
   }, []);
 
-  return <div ref={containerRef} className="absolute inset-0 -z-10 w-full h-full" />;
+  return <div ref={containerRef} className="fixed inset-0 w-full h-full" style={{ zIndex: -1 }} />;
 };
 
 export default ChromaticSmoke;
