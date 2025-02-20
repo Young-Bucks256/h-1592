@@ -5,7 +5,7 @@ const locations = [
   {
     title: "Paris, France",
     description: "The City of Light beckons with its iconic architecture and timeless romance.",
-    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop",
+    image: "/lovable-uploads/e6764045-1a5d-4f3d-80b8-d6ba711e528d.png",
     flag: "🇫🇷"
   },
   {
