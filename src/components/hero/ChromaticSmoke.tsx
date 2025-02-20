@@ -10,7 +10,7 @@ const ChromaticSmoke = () => {
 
     const sketch = (p: p5) => {
       const particles: Particle[] = [];
-      const numParticles = 100;
+      const numParticles = 150; // Increased number of particles
       
       class Particle {
         pos: p5.Vector;
@@ -69,10 +69,9 @@ const ChromaticSmoke = () => {
         display() {
           p.noStroke();
           p.colorMode(p.HSL);
-          // Increased opacity by adjusting the alpha value
-          const alpha = this.lifespan / 255 * 0.4; // Increased from 0.2 to 0.4
+          const alpha = this.lifespan / 255 * 0.6; // Increased opacity further
           p.fill(this.hue, 70, 50, alpha);
-          p.ellipse(this.pos.x, this.pos.y, 80, 80); // Increased size from 50 to 80
+          p.ellipse(this.pos.x, this.pos.y, 100, 100); // Increased particle size
         }
         
         isDead() {
@@ -82,8 +81,9 @@ const ChromaticSmoke = () => {
       
       p.setup = () => {
         const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+        canvas.style('display', 'block'); // Ensure canvas takes full space
         canvas.parent(containerRef.current!);
-        p.blendMode(p.ADD); // Add blend mode for more vibrant colors
+        p.blendMode(p.ADD);
         for (let i = 0; i < numParticles; i++) {
           particles.push(new Particle());
         }
@@ -115,7 +115,7 @@ const ChromaticSmoke = () => {
     };
   }, []);
 
-  return <div ref={containerRef} className="absolute inset-0 -z-10" />;
+  return <div ref={containerRef} className="absolute inset-0 -z-10 w-full h-full" />;
 };
 
 export default ChromaticSmoke;

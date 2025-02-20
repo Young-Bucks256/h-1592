@@ -12,12 +12,12 @@ const Index = () => {
   }, []);
 
   return (
-    <main className="min-h-screen relative bg-black">
+    <main className="min-h-screen w-full relative bg-black overflow-hidden">
       {/* Smoke Background */}
       <ChromaticSmoke />
 
       {/* Hero Content */}
-      <div className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-4xl mx-auto">
           <span className={`inline-block px-4 py-1 rounded-full bg-white/10 backdrop-blur-md text-white text-sm font-medium mb-6 transition-all duration-500 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
             Over 1000+ Destinations Available
