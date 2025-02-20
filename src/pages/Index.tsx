@@ -12,7 +12,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-black to-gray-900 overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-b from-transparent to-gray-900 overflow-hidden">
       {/* Background Effects */}
       <ChromaticSmoke />
       
