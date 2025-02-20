@@ -10,23 +10,32 @@ const ChromaticSmoke = () => {
 
     const sketch = (p: p5) => {
       const particles: any[] = [];
-      const numParticles = 100; // Increased for better coverage
+      const numParticles = 50;
+      
+      // Array of flag emojis
+      const flags = [
+        "🇺🇸", "🇬🇧", "🇫🇷", "🇩🇪", "🇮🇹", "🇪🇸", "🇵🇹", "🇯🇵",
+        "🇰🇷", "🇨🇳", "🇮🇳", "🇧🇷", "🇲🇽", "🇨🇦", "🇦🇺", "🇳🇿",
+        "🇿🇦", "🇸🇪", "🇳🇴", "🇫🇮", "🇩🇰", "🇳🇱", "🇧🇪", "🇨🇭"
+      ];
       
       class Particle {
         pos: p5.Vector;
         vel: p5.Vector;
         acc: p5.Vector;
-        hue: number;
+        flag: string;
         size: number;
         opacity: number;
+        rotation: number;
         
         constructor() {
           this.pos = p.createVector(p.random(p.width), p.random(p.height));
-          this.vel = p.createVector(p.random(-0.2, 0.2), p.random(-0.2, 0.2));
+          this.vel = p.createVector(p.random(-0.5, 0.5), p.random(-0.5, 0.5));
           this.acc = p.createVector(0, 0);
-          this.hue = p.random(200, 240); // Blue hues
-          this.size = p.random(150, 300);
-          this.opacity = p.random(20, 40);
+          this.flag = flags[Math.floor(p.random(flags.length))];
+          this.size = p.random(20, 30); // Much smaller size for the emojis
+          this.opacity = p.random(0.3, 0.8);
+          this.rotation = p.random(p.TWO_PI);
         }
         
         update() {
@@ -45,9 +54,12 @@ const ChromaticSmoke = () => {
           
           // Update physics
           this.vel.add(this.acc);
-          this.vel.limit(1);
+          this.vel.limit(0.8); // Slower movement
           this.pos.add(this.vel);
           this.acc.mult(0);
+          
+          // Gentle rotation
+          this.rotation += 0.01;
           
           // Wrap around edges
           if (this.pos.x < -this.size) this.pos.x = p.width + this.size;
@@ -57,24 +69,18 @@ const ChromaticSmoke = () => {
         }
         
         display() {
-          p.noStroke();
-          // Create gradient effect
-          const gradientSteps = 8;
-          for (let i = gradientSteps; i > 0; i--) {
-            const ratio = i / gradientSteps;
-            const currentSize = this.size * ratio;
-            const currentOpacity = this.opacity * ratio;
-            
-            p.fill(this.hue, 70, 60, currentOpacity);
-            p.ellipse(this.pos.x, this.pos.y, currentSize, currentSize);
-          }
+          p.push();
+          p.translate(this.pos.x, this.pos.y);
+          p.rotate(this.rotation);
+          p.textAlign(p.CENTER, p.CENTER);
+          p.textSize(this.size);
+          p.text(this.flag, 0, 0);
+          p.pop();
         }
       }
       
       p.setup = () => {
-        // Create canvas with pixel density handling
         const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-        p.pixelDensity(1);
         canvas.style('display', 'block');
         canvas.parent(containerRef.current!);
         
@@ -82,10 +88,6 @@ const ChromaticSmoke = () => {
         for (let i = 0; i < numParticles; i++) {
           particles.push(new Particle());
         }
-        
-        // Set color mode to HSL for better control
-        p.colorMode(p.HSL, 360, 100, 100, 100);
-        p.blendMode(p.SCREEN);
       };
       
       p.draw = () => {
