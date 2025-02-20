@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -40,7 +39,6 @@ const locations = [
 const LocationScroll = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,10 +66,6 @@ const LocationScroll = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLocationClick = (index: number) => {
-    setExpandedIndex(expandedIndex === index ? null : index);
-  };
-
   return (
     <div className="relative min-h-screen bg-black" ref={containerRef}>
       {/* Center Line */}
@@ -95,22 +89,19 @@ const LocationScroll = () => {
             <div className="w-full max-w-xl p-8">
               <div 
                 className={`group relative rounded-2xl overflow-hidden transition-all duration-500 ${
-                  expandedIndex === index ? "scale-110" : ""
+                  activeIndex === index ? "scale-110" : ""
                 }`}
                 style={{
                   transformOrigin: index % 2 === 0 ? "left center" : "right center",
                   transform: `${
-                    expandedIndex === index 
+                    activeIndex === index 
                       ? `scale(1.1) ${index % 2 === 0 ? "rotateY(0deg)" : "rotateY(0deg)"}` 
                       : `scale(1) ${index % 2 === 0 ? "rotateY(0deg)" : "rotateY(0deg)"}` 
                   }`,
                   perspective: "1000px"
                 }}
               >
-                <div 
-                  className="cursor-pointer"
-                  onClick={() => handleLocationClick(index)}
-                >
+                <div className="relative">
                   <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-all duration-300 group-hover:bg-black/40" />
                   <img
                     src={location.image}
@@ -128,7 +119,7 @@ const LocationScroll = () => {
                 </div>
 
                 {/* Expanded Content */}
-                {expandedIndex === index && (
+                {activeIndex === index && (
                   <div 
                     className="absolute inset-0 bg-black/90 backdrop-blur-md p-8 animate-fade-in"
                     style={{
