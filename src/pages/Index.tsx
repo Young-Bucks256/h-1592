@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import DestinationSearch from "@/components/search/DestinationSearch";
 import TrustBadges from "@/components/hero/TrustBadges";
+import ChromaticSmoke from "@/components/hero/ChromaticSmoke";
 
 const Index = () => {
   const [loaded, setLoaded] = useState(false);
@@ -11,16 +12,9 @@ const Index = () => {
   }, []);
 
   return (
-    <main className="min-h-screen relative">
-      {/* Hero Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1501854140801-50d01698950b"
-          alt="Stunning mountain landscape"
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/60" />
-      </div>
+    <main className="min-h-screen relative bg-black">
+      {/* Smoke Background */}
+      <ChromaticSmoke />
 
       {/* Hero Content */}
       <div className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
