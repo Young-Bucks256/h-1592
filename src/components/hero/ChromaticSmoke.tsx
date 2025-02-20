@@ -10,69 +10,71 @@ const ChromaticSmoke = () => {
 
     const sketch = (p: p5) => {
       const particles: any[] = [];
-      const numParticles = 50; // Starting with fewer particles for better performance
+      const numParticles = 100; // Increased for better coverage
       
       class Particle {
         pos: p5.Vector;
         vel: p5.Vector;
         acc: p5.Vector;
-        color: number;
-        alpha: number;
+        hue: number;
         size: number;
+        opacity: number;
         
         constructor() {
-          // Random starting position
           this.pos = p.createVector(p.random(p.width), p.random(p.height));
-          // Random initial velocity
-          this.vel = p.createVector(p.random(-0.5, 0.5), p.random(-0.5, 0.5));
+          this.vel = p.createVector(p.random(-0.2, 0.2), p.random(-0.2, 0.2));
           this.acc = p.createVector(0, 0);
-          // Random color from a pleasing palette
-          this.color = p.random([
-            p.color(33, 195, 240), // Light blue
-            p.color(230, 185, 128), // Sand color
-            p.color(255, 255, 255)  // White
-          ]);
-          this.alpha = p.random(40, 80);
-          this.size = p.random(100, 200);
+          this.hue = p.random(200, 240); // Blue hues
+          this.size = p.random(150, 300);
+          this.opacity = p.random(20, 40);
         }
         
         update() {
-          // Apply some perlin noise for organic movement
-          const angle = p.noise(this.pos.x * 0.001, this.pos.y * 0.001, p.frameCount * 0.002) * p.TWO_PI * 2;
-          const noiseForce = p5.Vector.fromAngle(angle);
-          noiseForce.mult(0.1);
-          this.acc.add(noiseForce);
+          // Perlin noise movement
+          const noiseScale = 0.002;
+          const noiseVal = p.noise(
+            this.pos.x * noiseScale, 
+            this.pos.y * noiseScale, 
+            p.frameCount * 0.005
+          );
           
-          // Update position
+          const angle = noiseVal * p.TWO_PI * 2;
+          const force = p5.Vector.fromAngle(angle);
+          force.mult(0.1);
+          this.acc.add(force);
+          
+          // Update physics
           this.vel.add(this.acc);
-          this.vel.limit(2); // Limit maximum speed
+          this.vel.limit(1);
           this.pos.add(this.vel);
           this.acc.mult(0);
           
           // Wrap around edges
-          if (this.pos.x < 0) this.pos.x = p.width;
-          if (this.pos.x > p.width) this.pos.x = 0;
-          if (this.pos.y < 0) this.pos.y = p.height;
-          if (this.pos.y > p.height) this.pos.y = 0;
-          
-          // Slowly change size for breathing effect
-          this.size = this.size + Math.sin(p.frameCount * 0.05) * 0.5;
+          if (this.pos.x < -this.size) this.pos.x = p.width + this.size;
+          if (this.pos.x > p.width + this.size) this.pos.x = -this.size;
+          if (this.pos.y < -this.size) this.pos.y = p.height + this.size;
+          if (this.pos.y > p.height + this.size) this.pos.y = -this.size;
         }
         
         display() {
           p.noStroke();
-          const c = this.color;
-          // Create a gradient effect
-          for (let i = this.size; i > 0; i -= 8) {
-            const alpha = (this.alpha * (i / this.size)) / 255;
-            p.fill(p.red(c), p.green(c), p.blue(c), alpha);
-            p.ellipse(this.pos.x, this.pos.y, i, i);
+          // Create gradient effect
+          const gradientSteps = 8;
+          for (let i = gradientSteps; i > 0; i--) {
+            const ratio = i / gradientSteps;
+            const currentSize = this.size * ratio;
+            const currentOpacity = this.opacity * ratio;
+            
+            p.fill(this.hue, 70, 60, currentOpacity);
+            p.ellipse(this.pos.x, this.pos.y, currentSize, currentSize);
           }
         }
       }
       
       p.setup = () => {
+        // Create canvas with pixel density handling
         const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+        p.pixelDensity(1);
         canvas.style('display', 'block');
         canvas.parent(containerRef.current!);
         
@@ -81,14 +83,15 @@ const ChromaticSmoke = () => {
           particles.push(new Particle());
         }
         
-        // Set blend mode for better visual effect
+        // Set color mode to HSL for better control
+        p.colorMode(p.HSL, 360, 100, 100, 100);
         p.blendMode(p.SCREEN);
       };
       
       p.draw = () => {
         p.clear();
         
-        // Update and display all particles
+        // Update and display particles
         particles.forEach(particle => {
           particle.update();
           particle.display();
@@ -100,6 +103,7 @@ const ChromaticSmoke = () => {
       };
     };
 
+    // Create P5 instance
     const p5Instance = new p5(sketch);
     
     return () => {
@@ -107,7 +111,13 @@ const ChromaticSmoke = () => {
     };
   }, []);
 
-  return <div ref={containerRef} className="fixed inset-0 w-full h-full" style={{ zIndex: -1 }} />;
+  return (
+    <div 
+      ref={containerRef} 
+      className="fixed inset-0 w-full h-full bg-[#090909]" 
+      style={{ zIndex: -1 }}
+    />
+  );
 };
 
 export default ChromaticSmoke;
