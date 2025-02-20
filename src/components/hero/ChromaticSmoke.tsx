@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react';
 import p5 from 'p5';
 
@@ -68,8 +69,10 @@ const ChromaticSmoke = () => {
         display() {
           p.noStroke();
           p.colorMode(p.HSL);
-          p.fill(this.hue, 70, 50, this.lifespan / 255 * 0.2);
-          p.ellipse(this.pos.x, this.pos.y, 50, 50);
+          // Increased opacity by adjusting the alpha value
+          const alpha = this.lifespan / 255 * 0.4; // Increased from 0.2 to 0.4
+          p.fill(this.hue, 70, 50, alpha);
+          p.ellipse(this.pos.x, this.pos.y, 80, 80); // Increased size from 50 to 80
         }
         
         isDead() {
@@ -80,6 +83,7 @@ const ChromaticSmoke = () => {
       p.setup = () => {
         const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
         canvas.parent(containerRef.current!);
+        p.blendMode(p.ADD); // Add blend mode for more vibrant colors
         for (let i = 0; i < numParticles; i++) {
           particles.push(new Particle());
         }
@@ -87,6 +91,7 @@ const ChromaticSmoke = () => {
       
       p.draw = () => {
         p.clear();
+        p.blendMode(p.ADD);
         
         for (let i = particles.length - 1; i >= 0; i--) {
           const particle = particles[i];
