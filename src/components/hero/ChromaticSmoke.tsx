@@ -11,6 +11,8 @@ const ChromaticSmoke = () => {
     const sketch = (p: p5) => {
       const particles: any[] = [];
       const numParticles = 50;
+      const mouseRepelRadius = 100; // Radius of mouse influence
+      const mouseRepelStrength = 2; // Strength of repulsion
       
       // Array of flag emojis
       const flags = [
@@ -33,12 +35,31 @@ const ChromaticSmoke = () => {
           this.vel = p.createVector(p.random(-0.5, 0.5), p.random(-0.5, 0.5));
           this.acc = p.createVector(0, 0);
           this.flag = flags[Math.floor(p.random(flags.length))];
-          this.size = p.random(20, 30); // Much smaller size for the emojis
+          this.size = p.random(20, 30);
           this.opacity = p.random(0.3, 0.8);
           this.rotation = p.random(p.TWO_PI);
         }
         
+        applyMouseForce(mousePos: p5.Vector) {
+          // Calculate direction from mouse to particle
+          const dir = p5.Vector.sub(this.pos, mousePos);
+          const distance = dir.mag();
+          
+          // Only apply force if within influence radius
+          if (distance < mouseRepelRadius) {
+            dir.normalize();
+            // Force inversely proportional to distance
+            const force = p.map(distance, 0, mouseRepelRadius, mouseRepelStrength, 0);
+            dir.mult(force);
+            this.acc.add(dir);
+          }
+        }
+        
         update() {
+          // Apply mouse repulsion
+          const mousePos = p.createVector(p.mouseX, p.mouseY);
+          this.applyMouseForce(mousePos);
+          
           // Perlin noise movement
           const noiseScale = 0.002;
           const noiseVal = p.noise(
@@ -54,7 +75,7 @@ const ChromaticSmoke = () => {
           
           // Update physics
           this.vel.add(this.acc);
-          this.vel.limit(0.8); // Slower movement
+          this.vel.limit(0.8);
           this.pos.add(this.vel);
           this.acc.mult(0);
           
