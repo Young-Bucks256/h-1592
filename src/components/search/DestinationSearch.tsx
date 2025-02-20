@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 const DestinationSearch = () => {
   return (
-    <div className="bg-white/90 backdrop-blur-md rounded-xl p-6 shadow-lg w-full max-w-3xl mx-auto animate-fade-up [animation-delay:400ms]">
+    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 shadow-lg w-full max-w-3xl mx-auto animate-fade-up [animation-delay:400ms]">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="col-span-1 md:col-span-2">
           <div className="relative">
@@ -12,7 +12,7 @@ const DestinationSearch = () => {
             <input
               type="text"
               placeholder="Where to?"
-              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-ocean focus:ring-1 focus:ring-ocean outline-none transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/20 border border-white/10 focus:border-ocean focus:ring-1 focus:ring-ocean outline-none transition-all text-white placeholder:text-white/70"
             />
           </div>
         </div>
@@ -21,7 +21,7 @@ const DestinationSearch = () => {
           <input
             type="text"
             placeholder="When?"
-            className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-ocean focus:ring-1 focus:ring-ocean outline-none transition-all"
+            className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/20 border border-white/10 focus:border-ocean focus:ring-1 focus:ring-ocean outline-none transition-all text-white placeholder:text-white/70"
           />
         </div>
         <div>
