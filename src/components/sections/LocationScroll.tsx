@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const locations = [
   {
@@ -37,6 +38,7 @@ const locations = [
 ];
 
 const LocationScroll = () => {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -65,6 +67,10 @@ const LocationScroll = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleBookNow = () => {
+    navigate('/booking');
+  };
 
   return (
     <div className="relative min-h-screen bg-black" ref={containerRef}>
@@ -142,6 +148,7 @@ const LocationScroll = () => {
                         <Button 
                           className="w-full"
                           size="lg"
+                          onClick={handleBookNow}
                         >
                           Book Now
                         </Button>
